@@ -19,6 +19,9 @@ extern void _webview_dispatch_cb(webview_t w, void *arg);
 // [2] C++ 함수 선언 (구현은 webview_impl.cc에 있음)
 extern void CgoWebViewShow(webview_t w);
 
+// ★ [추가] 위치와 크기를 설정하는 C 함수 선언
+extern void CgoWebViewSetBounds(webview_t w, int x, int y, int width, int height, int hint);
+
 // [3] 접착제 코드 (간단한 C 함수들)
 static void CgoWebViewBind(webview_t w, const char *name, uintptr_t arg) {
 	typedef void (*callback_t)(const char *seq, const char *req, void *arg);
@@ -50,7 +53,7 @@ type WebView interface {
 	Destroy()
 	Window() unsafe.Pointer
 	SetTitle(title string)
-	SetSize(w int, h int, hint int)
+	SetSize(x int, y int, w int, h int, hint int) // [수정] x, y 추가
 	Navigate(url string)
 	SetHtml(html string)
 	Init(js string)
@@ -96,6 +99,7 @@ func (w *webview) Destroy() {
 }
 
 func (w *webview) Run() {
+	Show()
 	C.webview_run(w.w)
 }
 
@@ -130,8 +134,10 @@ func (w *webview) SetTitle(title string) {
 	C.webview_set_title(w.w, s)
 }
 
-func (w *webview) SetSize(width int, height int, hint int) {
-	C.webview_set_size(w.w, C.int(width), C.int(height), C.webview_hint_t(hint))
+// ★ [수정] SetSize 구현 변경
+// 기존 C.webview_set_size 대신 새로 만든 C.CgoWebViewSetBounds를 호출
+func (w *webview) SetSize(x int, y int, width int, height int, hint int) {
+	C.CgoWebViewSetBounds(w.w, C.int(x), C.int(y), C.int(width), C.int(height), C.int(hint))
 }
 
 func (w *webview) Init(js string) {
