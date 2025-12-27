@@ -33,7 +33,7 @@ extern "C" void CgoWebViewSetBounds(webview_t w, int x, int y, int width, int he
     // 1. 기존 set_size를 먼저 호출하여 크기(Width, Height)와 힌트(Fixed, Min, Max)를 적용합니다.
     // webview.h 내부적으로 Windows는 SWP_NOMOVE를 사용하여 위치를 건드리지 않고,
     // GTK는 gtk_window_resize만 호출하므로 위치 이동 로직과 충돌하지 않습니다.
-    d->set_size(width, height, (webview::webview_hint_t)hint);
+    d->set_size(width, height, (webview_hint_t)hint);
 
     // 2. 위치(X, Y) 이동 처리
 #ifdef _WIN32
@@ -46,4 +46,5 @@ extern "C" void CgoWebViewSetBounds(webview_t w, int x, int y, int width, int he
     GtkWidget *window = (GtkWidget *)d->window();
     gtk_window_move(GTK_WINDOW(window), x, y);
 #endif
+
 }
