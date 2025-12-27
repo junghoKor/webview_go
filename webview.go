@@ -99,7 +99,7 @@ func (w *webview) Destroy() {
 }
 
 func (w *webview) Run() {
-	Show()
+	C.CgoWebViewShow(w.w)
 	C.webview_run(w.w)
 }
 
